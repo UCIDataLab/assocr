@@ -2,7 +2,7 @@ Package: assocr
 Type: Package
 Title: Quantify degreee of assocation between discrete event series
 Version: 0.1.0
-Authors@R: person("Christopher", "Galbraith", email = galbraic@uci.edu, 
+Authors@R: person("Christopher", "Galbraith", email = "galbraic@uci.edu", 
                   role = c("cre", "aut"))
 Description: An implementation of the methods of <paper> in R.
     Contains methods for quantifying the degree of association between pairs of discrete 
@@ -23,3 +23,4 @@ Imports:
     gridExtra,
     MASS,
     ROCR
+RoxygenNote: 6.0.1
