@@ -18,9 +18,10 @@ Description: An implementation of the methods of <paper> in R.
 License: MIT
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     ggplot2,
     gridExtra,
     MASS,
     ROCR
 RoxygenNote: 6.0.1
+Suggests: testthat
