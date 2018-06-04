@@ -13,7 +13,7 @@
 #' @param low.bds Numeric array \code{c(n1, n2)} of criteria for minimum number events
 #'   of mark types 1 and 2, resptively.
 #' @return Data.frame of \code{<id, m, t>}
-format.data <- function(data, id.sum, dev=FALSE, low.bds){
+format_data <- function(data, id.sum, dev=FALSE, low.bds){
   if(dev == FALSE){  # marks corr to FB and non-FB events on computer
     attach(id.sum)
     incl <- unique( id.sum$id[ which( dur == 7
@@ -61,7 +61,7 @@ format.data <- function(data, id.sum, dev=FALSE, low.bds){
 #' @param sigma Standard deviation of normal if \code{indep == FALSE}
 #' @param lambda2 intensity of second process if  \code{indep == TRUE}
 #' @return Data.frame of \code{<t, m>}
-sim.markedPP <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma, lambda2){
+sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma, lambda2){
   x <- cumsum( rexp(n = nSamp, rate = lambda) )  # homogeneous poisson process
   x.w <- x[x <= W[2]]  # Poisson process restricted to window W
   n.x <- length(x.w)  # number of points in window W
@@ -108,7 +108,7 @@ sim.markedPP <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigm
 #'   \code{default == c("Mark 1", "Mark 2")}
 #' @param title Main title of plot; \code{default == ""}
 #' @param xlab X-axis label; \code{default == "Time"}
-plot.markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="Time"){
+plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="Time"){
   ind <- which(x$m == 1)  # get index for type 1 points
   x.1 <- x$t[ind]
   n1 <- length(x.1)
@@ -133,7 +133,7 @@ plot.markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="
 #' @param cc Numeric cex value for axis & legend magnification; \code{default == 1}
 #' @param leg Logical indicating whether or not to include legend; \code{default == TRUE}
 #' @param leg.loc Where to locate legend.
-plot.mult.markedPP <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"), leg.loc, cc=1){
+plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"), leg.loc, cc=1){
   ids <- unique(x$id)
   plot( 1, ylim=c(1,length(ids)), xlim=W, type="n", ylab="Student ID", xlab="Day", yaxt="n",
         cex.lab = cc, cex.axis = cc )

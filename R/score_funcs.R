@@ -8,9 +8,9 @@
 #' @param x A vector of positive real numbers.
 #' @return Minimum value of \code{x} such that \code{min(x) > 0}
 #' @examples
-#' nonzero.min(c(1,3,5,2,0))
+#' nonzero_min(c(1,3,5,2,0))
 
-nonzero.min <- function(x){
+nonzero_min <- function(x){
   return( min(x[x > 0]) )
 }
 
@@ -61,9 +61,9 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
   if(nrow(xB) == 0){
     return( list(iet.mn = NA, iet.md = NA, s= NA , m = NA, nA = nrow(xA), nB = 0)) }
   if(bidirectional == TRUE){
-    BA <- sapply(xB$t, function(e) nonzero.min(abs(xA$t - e)) )
+    BA <- sapply(xB$t, function(e) nonzero_min(abs(xA$t - e)) )
   }else{  # only compute iet to nearest event of type A before it
-    BA <- sapply(xB$t, function(e) nonzero.min(e - xA$t))
+    BA <- sapply(xB$t, function(e) nonzero_min(e - xA$t))
     BA[is.infinite(BA)] <- NA  # replace obs without A events before B events with NAs
   }
 
