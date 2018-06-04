@@ -1,11 +1,25 @@
 Package: assocr
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Quantify degreee of assocation between discrete event series
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: person("Christopher", "Galbraith", email = galbraic@uci.edu, 
+                  role = c("cre", "aut"))
+Description: An implementation of the methods of <paper> in R.
+    Contains methods for quantifying the degree of association between pairs of discrete 
+    event time series, focusing on the case where two associated event series exhibit temporal 
+    clustering such that the occurrence of one type of event at a particular time increases 
+    the likelihood that an event of the other type will also occur nearby in time. Multiple
+    different score functions are used to quantify association, including characteristics of 
+    marked point processes and summary statistics for inter-event times. Two techniques are 
+    currently implemented for assessing the degree of associaton: (i) a population-based approach 
+    to calculate score-based likelihood ratios when a sample from a relevant population is 
+    available, and (ii) a resampling approach to compute coincidental match probabilities when 
+    only a single pair of event series is available. 
+License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    ggplot2,
+    ROCR
+
+
