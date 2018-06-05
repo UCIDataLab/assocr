@@ -127,7 +127,7 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="
 ###################################################################################
 #' Plot multiple pairs of event series.
 #'
-#' @inheritParams plot.markedpp
+#' @inheritParams plot_markedpp
 #' @param x Data.frame of \code{<id, t, m>} multiple pairs of event series.
 #' @param c Numeric cex value for point size; \code{default == 1}
 #' @param cc Numeric cex value for axis & legend magnification; \code{default == 1}
@@ -135,20 +135,48 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="
 #' @param leg.loc Where to locate legend.
 plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"), leg.loc, cc=1){
   ids <- unique(x$id)
-  plot( 1, ylim=c(1,length(ids)), xlim=W, type="n", ylab="Student ID", xlab="Day", yaxt="n",
-        cex.lab = cc, cex.axis = cc )
+  plot(1,
+       ylim = c(0.5, length(ids) + 0.5),
+       xlim = W,
+       type = "n",
+       ylab = "User ID",
+       xlab = "t",
+       yaxt = "n",
+       cex.lab = cc,
+       cex.axis = cc )
+  abline(h = 0.5,
+         col = gray(0.8, alpha=0.9),
+         lwd = 0.5)
   for(i in 1:length(ids)){
-    ind <- which(x$id==ids[i])
-    abline(h=i, col=gray(0.8, alpha=0.2), lwd=0.5)
-    ind <- which( x$id == ids[i] & x$m == 1 )
-    points( x$t[ind], rep(i,length(ind)), pch="|", cex=c, col=gray(0, alpha=0.35))
-    ind <- which( x$id == ids[i] & x$m == 2 )
-    points( x$t[ind], rep(i-1/3,length(ind)), pch="|", cex=c, col=gray(0.6, alpha=0.4))
+    abline(h = i + 0.5,
+           col = gray(0.8, alpha=0.9),
+           lwd = 0.5)
+    ind <- x$id == ids[i] & x$m == 1
+    points(x = x$t[ind],
+           y = rep(i - 0.15, sum(ind)),
+           pch = "|",
+           cex = c,
+           col = gray(0, alpha=0.4))
+    ind <- x$id == ids[i] & x$m == 2
+    points(x = x$t[ind],
+           y = rep(i + 0.15, sum(ind)),
+           pch = "|",
+           cex = c,
+           col = gray(0.6, alpha=0.4))
   }
-  axis(2, at=1:length(ids), labels=as.character(ids), las=1, cex.axis=cc*0.75)
+  axis(2,
+       at = 1:length(ids),
+       labels = as.character(ids),
+       las = 1,
+       cex.axis=cc*0.75)
   if(leg == TRUE){
-    legend(leg.loc[1], leg.loc[2],
-           legend=lbl, pch="|", col=c(gray(0), gray(0.6)),
-           horiz=TRUE, bty="n", cex=cc, xpd=TRUE)
+    legend(2.25, 11.75,
+           legend = c("Mark 1", "Mark 2"),
+           pch = "|",
+           col = c(gray(0.6), gray(0)),
+           horiz = TRUE,
+           bty = "n",
+           cex = cc,
+           xpd = TRUE)
   }
 }
