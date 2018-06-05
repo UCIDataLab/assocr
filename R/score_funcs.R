@@ -5,7 +5,7 @@
 
 #' Return smallest non-zero element of a vector.
 #'
-#' @param x A vector of positive real numbers.
+#' @param x A vector of real numbers.
 #' @return Minimum value of \code{x} such that \code{min(x) > 0}
 #' @examples
 #' nonzero_min(c(1,3,5,2,0))
@@ -23,6 +23,7 @@ nonzero_min <- function(x){
 #' @return Decimal ceiling of \code{x}.
 
 ceiling_dec <- function(x, level = 0){
+  # return(trunc(x*10^level + 0.5) / 10^level)
   return( round(x + 5*10^(-level-1), level) )
 }
 
@@ -33,7 +34,8 @@ ceiling_dec <- function(x, level = 0){
 #' @return Number of leading zeros.
 
 count_zeros <- function(x){
-  return( attr(regexpr("(?<=\\.)0+", x, perl = TRUE), "match.length") )
+  return( attr(regexpr("(?<=\\.)0+", format(x, scientific = FALSE), perl = TRUE),
+               "match.length") )
 }
 
 ################################################################################

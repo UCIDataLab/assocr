@@ -7,7 +7,7 @@
 nonzero_min(x)
 }
 \arguments{
-\item{x}{A vector of positive real numbers.}
+\item{x}{A vector of real numbers.}
 }
 \value{
 Minimum value of \code{x} such that \code{min(x) > 0}
