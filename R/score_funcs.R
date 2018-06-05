@@ -114,7 +114,7 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 
 calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
                          bds.m = c(0,0.6), bw.type = "nrd"){
-  rslt <- data.frame(matrix(NA, nrow = nrow(same_src) + nrow(diff_src), ncol = 5))
+  rslt <- data.frame(matrix(NA, nrow = nrow(same_src) + nrow(diff_src), ncol = 9))
   names(rslt) <- c("indep", "slr.iet.mn", "slr.iet.md", "slr.s", "slr.m",
                    "cmp.iet.mn", "cmp.iet.md", "cmp.s", "cmp.m")
   rslt$indep <- c( rep(0, nrow(same_src)), rep(1, nrow(diff_src)) )
@@ -139,14 +139,14 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
     ### compute score-based likelihood ratio
     rslt$slr.iet.mn[i] <- p.mn.win(rslt$iet.mn[i]) / p.mn.bt(rslt$iet.mn[i])
     rslt$slr.iet.md[i] <- p.md.win(rslt$iet.md[i]) / p.md.bt(rslt$iet.md[i])
-    slr_s[i] <- p.s.win(rslt$s[i]) / p.s.bt(rslt$s[i])
-    slr_m[i] <- p.m.win(rslt$m[i]) / p.m.bt(rslt$m[i])
+    rslt$slr.s[i] <- p.s.win(rslt$s[i]) / p.s.bt(rslt$s[i])
+    rslt$slr.m[i] <- p.m.win(rslt$m[i]) / p.m.bt(rslt$m[i])
 
     ### compute coincidental match probability
     rslt$cmp.iet.mn[i] <- sum(diff$iet.mn < rslt$iet.mn[i]) / nrow(diff)
     rslt$cmp.iet.md[i] <- sum(diff$iet.md < rslt$iet.md[i]) / nrow(diff)
     rslt$cmp.s[i] <- sum(diff$s < rslt$s[i]) / nrow(diff)
-    rslt$cmp.m[i] <- sum(diff$m < rslt$m[i]) / nrow(diff)
+    rslt$cmp.m[i] <- sum(diff$m > rslt$m[i]) / nrow(diff)
   }
 
   return( rslt )
