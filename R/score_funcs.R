@@ -97,7 +97,8 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 }
 
 ################################################################################
-#' Calculate score-based likelihood ratios & coincidental match probabilities.
+#' Calculate score-based likelihood ratios & coincidental match probabilities
+#' for simulated pairs of event series.
 #'
 #' @param same_src,diff_src Data.frame of score functions for same- and
 #'   different-source pairs of event series, respectively, computed via

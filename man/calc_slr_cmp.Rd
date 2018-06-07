@@ -2,7 +2,8 @@
 % Please edit documentation in R/score_funcs.R
 \name{calc_slr_cmp}
 \alias{calc_slr_cmp}
-\title{Calculate score-based likelihood ratios & coincidental match probabilities.}
+\title{Calculate score-based likelihood ratios & coincidental match probabilities
+for simulated pairs of event series.}
 \usage{
 calc_slr_cmp(same_src, diff_src, bds.iet, bds.s = c(-1, 1), bds.m = c(0,
   0.6), bw.type = "nrd")
@@ -26,5 +27,6 @@ Data.frame of SLRs and CMPs for each score function where
          cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 }
 \description{
-Calculate score-based likelihood ratios & coincidental match probabilities.
+Calculate score-based likelihood ratios & coincidental match probabilities
+for simulated pairs of event series.
 }
