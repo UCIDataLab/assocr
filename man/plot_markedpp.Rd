@@ -14,8 +14,8 @@ plot_markedpp(x, W, c = 1, lbl = c("Mark 1", "Mark 2"), title = "",
 
 \item{c}{Numeric cex value for axis & legend magnification; \code{default == 1}}
 
-\item{lbl}{Vector of labels for the legend corresponding to marks 1/A and 2/B, respectively;
-\code{default == c("Mark 1", "Mark 2")}}
+\item{lbl}{Vector of labels for the legend corresponding to marks 1/A and 2/B,
+respectively; \code{default == c("Mark 1", "Mark 2")}}
 
 \item{title}{Main title of plot; \code{default == ""}}
 
