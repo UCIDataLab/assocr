@@ -18,7 +18,8 @@ sessionize_data(data, thres = 10, timeScale = "min")
 List of data.frames:
   \itemize{
     \item \code{data}: sessionized data, \code{<id, m, sid, t>}
-    \item \code{sessions}: summary of sessionized data, \code{<id, m, sid, n, t>}
+    \item \code{sessions}: summary of sessionized data,
+           \code{<id, m, sid, n, t>}
   }
 }
 \description{

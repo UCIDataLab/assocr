@@ -14,11 +14,12 @@ sim_markedpp(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma,
 
 \item{nSamp}{Number of samples to draw, intentionally too large.}
 
-\item{indep}{Logical indicating if the second process should depend on the first;
-\code{default == FALSE}
+\item{indep}{Logical indicating if the second process should depend on the
+first; \code{default == FALSE}
 \itemize{
   \item \code{TRUE}: homogeneous Poisson process of rate lambda2
-  \item \code{FALSE}: draw \eqn{Bern(p)}, if 1 draw point from \eqn{N(t_1[i],sigma^2)}
+  \item \code{FALSE}: draw \eqn{Bern(p)}, if 1 draw point from
+        \eqn{N(t_1[i],sigma^2)}
 }}
 
 \item{p}{Bernoulli probability if \code{indep == FALSE}}

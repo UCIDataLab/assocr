@@ -13,11 +13,11 @@ format_data(data, id.sum, dev = FALSE, low.bds)
 \item{id.sum}{Data.frame of id and counts by event type,
 \code{<id, ev.dur, dur, tot, phone, comp, comp.fb, comp.nonfb, start, end>}}
 
-\item{dev}{Logical indicating if marks correspond to device type (1=phone, 2=comp);
-\code{default == FALSE}}
+\item{dev}{Logical indicating if marks correspond to device type
+(1=phone, 2=comp); \code{default == FALSE}}
 
-\item{low.bds}{Numeric array \code{c(n1, n2)} of criteria for minimum number events
-of mark types 1 and 2, resptively.}
+\item{low.bds}{Numeric array \code{c(n1, n2)} of criteria for minimum number
+events of mark types 1 and 2, resptively.}
 }
 \value{
 Data.frame of \code{<id, m, t>}

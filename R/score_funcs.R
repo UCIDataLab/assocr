@@ -58,15 +58,21 @@ count_zeros <- function(x){
 
 calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
   ### calculate iets
+  x <- x[order(x$t), ]
   xA <- x[which(x$m == 1),]
   xB <- x[which(x$m == 2),]
   if(nrow(xB) == 0){
-    return( list(iet.mn = NA, iet.md = NA, s= NA , m = NA, nA = nrow(xA), nB = 0)) }
+    return( list(iet.mn = NA,
+                 iet.md = NA,
+                 s = NA ,
+                 m = NA,
+                 nA = nrow(xA),
+                 nB = 0)) }
   if(bidirectional == TRUE){
     BA <- sapply(xB$t, function(e) nonzero_min(abs(xA$t - e)) )
   }else{  # only compute iet to nearest event of type A before it
     BA <- sapply(xB$t, function(e) nonzero_min(e - xA$t))
-    BA[is.infinite(BA)] <- NA  # replace obs without A events before B events with NAs
+    BA[is.infinite(BA)] <- NA  # replace obs w/o A events before B events w/ NAs
   }
 
   ### compute nn probability table 5.2 p 313 of Ilian et al
@@ -115,7 +121,9 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 
 calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
                          bds.m = c(0,0.6), bw.type = "nrd"){
-  rslt <- data.frame(matrix(NA, nrow = nrow(same_src) + nrow(diff_src), ncol = 9))
+  rslt <- data.frame(matrix(NA,
+                            nrow = nrow(same_src) + nrow(diff_src),
+                            ncol = 9))
   names(rslt) <- c("indep", "slr.iet.mn", "slr.iet.md", "slr.s", "slr.m",
                    "cmp.iet.mn", "cmp.iet.md", "cmp.s", "cmp.m")
   rslt$indep <- c( rep(0, nrow(same_src)), rep(1, nrow(diff_src)) )
@@ -125,15 +133,19 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
     tmp <-rslt[-i, ]  # remove current obs for calculation of density funcs
     ### same source densities
     same <- tmp[tmp$indep == 0, ]
-    p.mn.win <- approxfun(density(same$iet.mn, from=bds.iet[1], to=bds.iet[2], bw=bw.type))
-    p.md.win <- approxfun(density(same$iet.md, from=bds.iet[1], to=bds.iet[2], bw=bw.type))
+    p.mn.win <- approxfun(density(same$iet.mn, from=bds.iet[1], to=bds.iet[2],
+                                  bw=bw.type))
+    p.md.win <- approxfun(density(same$iet.md, from=bds.iet[1], to=bds.iet[2],
+                                  bw=bw.type))
     p.s.win <- approxfun(density(same$s, from=bds.s[1], to=bds.s[2], bw=bw.type))
     p.m.win <- approxfun(density(same$m, from=bds.m[1], to=bds.m[2], bw=bw.type))
 
     ### different source densities
     diff <- tmp[tmp$indep == 1, ]
-    p.mn.bt <- approxfun(density(diff$iet.mn, from=bds.iet[1], to=bds.iet[2], bw=bw.type))
-    p.md.bt <- approxfun(density(diff$iet.md, from=bds.iet[1], to=bds.iet[2], bw=bw.type))
+    p.mn.bt <- approxfun(density(diff$iet.mn, from=bds.iet[1], to=bds.iet[2],
+                                 bw=bw.type))
+    p.md.bt <- approxfun(density(diff$iet.md, from=bds.iet[1], to=bds.iet[2],
+                                 bw=bw.type))
     p.s.bt <- approxfun(density(diff$s, from=bds.s[1], to=bds.s[2], bw=bw.type))
     p.m.bt <- approxfun(density(diff$m, from=bds.m[1], to=bds.m[2], bw=bw.type))
 
@@ -154,13 +166,87 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 }
 
 ################################################################################
+#' Calculate the coincidental match probability for a single pairs of event
+#' series.
+#'
+#' @inheritParams calc_score_funcs
+#' @param data List of data.frames for one pair of event series (output of
+#'   \code{assocr::sessionize_data()}):
+#'   \itemize{
+#'     \item \code{data}: sessionized data, \code{<id, m, sid, t>}
+#'     \item \code{sessions}: summary of sessionized data,
+#'           \code{<id, m, sid, n, t>}
+#'   }
+#' @param n Number of samples to draw
+#' @param samp Sampling technique to use. One of
+#'   \itemize{
+#'     \item \code{empirical}: sessionized resampling from empirical distn of
+#'       start times
+#'     \item \code{periodic}: sessionized resampling from sinusoidal curve
+#'       fitted to the data
+#'   }
+#' @param rng Vector of \code{c(low, high)} limits for sampling session start
+#'   times if \code{samp == "periodic"}
+#' @return Data.frame of CMPs for each score function;
+#'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
+calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
+                     samp = "empirical", rng = NULL){
+  sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
+  names(sim) <- c("iet.mn", "iet.md", "s", "m")
+  dat.m2 <- data$data[data$data$m == 2, c("m", "t")]  # event series of mark 2
+  n1 <- sum(data$data$m == 1)  # number of events of mark 1
+  for (i in 1:n) {# simulate start times of mark 1 & calc score funcs for sim pair
+    t <- .session_resampling(data, samp = samp, rng = rng)
+    tmp <- rbind(dat.m2, cbind(t, m=rep(1, n1)))
+    sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
+  }
+
+  ### compute & return coincidental match probability
+  obs <- calc_score_funcs(data$data, W, bidirectional)  # observed pair
+
+  return( list(iet.mn = sum(sim$iet.mn < obs$iet.mn) / n,
+               iet.md = sum(sim$iet.md < obs$iet.md) / n,
+               s = sum(sim$s < obs$s) / n,
+               m = sum(sim$m > obs$m) / n
+               )
+          )
+}
+
+################################################################################
+#' Resample session start times.
+#'
+#' @inheritParams calc_cmp
+#' @return Vector of resampled times for event series of mark 1.
+.session_resampling <- function(data, samp = "empirical", rng = NULL){
+  # sample new session start times for events of mark 1
+  ind <- data$sessions$m == 1
+  nSamp <- sum(ind)
+  if (samp == "empirical") {
+    stop("Haven't set this up yet!")
+  } else if (samp == "periodic") {
+    mu <- mean(rng)
+    sigma <- (rng[2] - mu) / 3  # 99% of start times fall in rng
+    t.ses <- rnorm(nSamp, mean = mu, sd = sigma)
+  } else {
+    stop("Invalid value for samp; enter one of (\"empirical\", \"periodic\")")
+  }
+  sim.t <- data$data$t[data$data$m == 1] -  # current times of mark 1 events
+    with(data$sessions[ind, ], rep(t, n)) +  # subtract current session start times
+    rep(t.ses, data$sessions$n[ind])  # add new start times in
+  return (sim.t)
+}
+
+################################################################################
 # ### DESCRIPTION - Calculate quantiles from simulation
 # ### INPUT - scores: data.frame of SLRs and cmps for each score function
 # ###             where indep == 1 if the marked point process was independent
-# ###             <iet.mn, iet.md, indep, slr.iet.mn, slr.iet.md, cmp.iet.mn, cmp.iet.md>
-# ###         which.score: (default == "slr.iet.mn") which score function to evaulate
+# ###             <iet.mn, iet.md, indep, slr.iet.mn, slr.iet.md, cmp.iet.mn,
+# ###              cmp.iet.md>
+# ###         which.score: (default == "slr.iet.mn") which score function to
+# ###                      evaulate
 # ###         p: relative frequency of B to A events
-# ###         sigma: std dev of normal distn used to generate dependent events (in sec)
+# ###         sigma: std dev of normal distn used to generate dependent events
+# ###                (in sec)
 # ### OUTPUT - data.frame of <p, sigma, indep, lower 2.5%, median, upper 97.5%>
 #
 # summarize_rslts <- function(scores, which.score = "slr.iet.mn", p, sigma){

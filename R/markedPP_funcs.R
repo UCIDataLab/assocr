@@ -6,12 +6,12 @@
 #'
 #' @param data Data.frame of event data,
 #'   \code{<id, dt, t, type, category, app_name, lbl_moshe, is_fb, t.center>}
-#' @param dev Logical indicating if marks correspond to device type (1=phone, 2=comp);
-#'   \code{default == FALSE}
+#' @param dev Logical indicating if marks correspond to device type
+#'   (1=phone, 2=comp); \code{default == FALSE}
 #' @param id.sum Data.frame of id and counts by event type,
 #'   \code{<id, ev.dur, dur, tot, phone, comp, comp.fb, comp.nonfb, start, end>}
-#' @param low.bds Numeric array \code{c(n1, n2)} of criteria for minimum number events
-#'   of mark types 1 and 2, resptively.
+#' @param low.bds Numeric array \code{c(n1, n2)} of criteria for minimum number
+#'   events of mark types 1 and 2, resptively.
 #' @return Data.frame of \code{<id, m, t>}
 format_data <- function(data, id.sum, dev=FALSE, low.bds){
   if(dev == FALSE){  # marks corr to FB and non-FB events on computer
@@ -49,7 +49,8 @@ format_data <- function(data, id.sum, dev=FALSE, low.bds){
 #' @return List of data.frames:
 #'   \itemize{
 #'     \item \code{data}: sessionized data, \code{<id, m, sid, t>}
-#'     \item \code{sessions}: summary of sessionized data, \code{<id, m, sid, n, t>}
+#'     \item \code{sessions}: summary of sessionized data,
+#'            \code{<id, m, sid, n, t>}
 #'   }
 sessionize_data <- function(data, thres = 10, timeScale = "min"){
   # convert event times to minutes
@@ -62,7 +63,8 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
   } else if (timeScale == "day"){
     data$t.min <- data$t * 24 * 60
   } else {
-    stop("Invalid value for timeScale; enter one of (\"s\", \"min\", \"hr\", \"day\")")
+    stop("Invalid value for timeScale; enter one of (\"s\", \"min\", \"hr\",
+         \"day\")")
   }
 
   ids <- unique(data$id)  # get unique ids from the data
@@ -90,7 +92,8 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 ###################################################################################
 #' Group single event series (i.e., one user & one type of event) into sessions.
 #'
-#' @param data Data.frame of event data of same mark for one user, \code{<id, t, t.min>}
+#' @param data Data.frame of event data of same mark for one user,
+#'   \code{<id, t, t.min>}
 #' @param thres Number of inactive minutes to consider a new session start
 #' @param timeScale Scale of time measurements of data; one of
 #'   \code{c("s", "min", "hr", "day")}
@@ -102,7 +105,8 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 .find_sessions <- function(data, thres = 10, timeScale = "min"){
   data$diff <- c(0, diff(data$t.min))  # get times between events
   row.names(data) <- 1:nrow(data)
-  data.sessions <- data[data$diff == 0 | data$diff >= thres, c("id", "t", "t.min")]  # find session starts
+  data.sessions <- data[data$diff == 0 | data$diff >= thres,
+                        c("id", "t", "t.min")]  # find session starts
   data.sessions$sid <- 1:nrow(data.sessions)  # number sessions
   data.ses.len <- diff(as.numeric(row.names(data.sessions)))
   data.ses.len <- c(data.ses.len, nrow(data) - sum(data.ses.len))
@@ -117,11 +121,12 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 #' @param lambda Intensity of first process (i.e. of Mark 1/A).
 #' @param W Observation window \code{c(low, high)}.
 #' @param nSamp Number of samples to draw, intentionally too large.
-#' @param indep Logical indicating if the second process should depend on the first;
-#'   \code{default == FALSE}
+#' @param indep Logical indicating if the second process should depend on the
+#'   first; \code{default == FALSE}
 #'   \itemize{
 #'     \item \code{TRUE}: homogeneous Poisson process of rate lambda2
-#'     \item \code{FALSE}: draw \eqn{Bern(p)}, if 1 draw point from \eqn{N(t_1[i],sigma^2)}
+#'     \item \code{FALSE}: draw \eqn{Bern(p)}, if 1 draw point from
+#'           \eqn{N(t_1[i],sigma^2)}
 #'   }
 #' @param p Bernoulli probability if \code{indep == FALSE}
 #' @param normal Logical indicating distribution used to simulate dependent events;
@@ -133,13 +138,16 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 #' @param sigma Standard deviation of normal if \code{indep == FALSE}
 #' @param lambda2 intensity of second process if  \code{indep == TRUE}
 #' @return Data.frame of \code{<t, m>}
-sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma, lambda2){
+sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma,
+                         lambda2){
   x <- cumsum( rexp(n = nSamp, rate = lambda) )  # homogeneous poisson process
   x.w <- x[x <= W[2]]  # Poisson process restricted to window W
   n.x <- length(x.w)  # number of points in window W
 
   if(indep == FALSE){  # generate second point process dependent on first process
-    d <- rbinom(nSamp, size=1, prob=p)  # wether or not to draw a point from second process
+    d <- rbinom(nSamp,
+                size=1,
+                prob=p)  # wether or not to draw a point from second process
     y <- rep(0, nSamp)  # place holder for second pp
     for(i in 1:nSamp){
       if(d[i] == 1){
@@ -180,7 +188,8 @@ sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigm
 #'   respectively; \code{default == c("Mark 1", "Mark 2")}
 #' @param title Main title of plot; \code{default == ""}
 #' @param xlab X-axis label; \code{default == "Time"}
-plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="Time"){
+plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="",
+                          xlab="Time"){
   ind <- which(x$m == 1)  # get index for type 1 points
   x.1 <- x$t[ind]
   n1 <- length(x.1)
@@ -203,9 +212,11 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="", xlab="
 #' @param x Data.frame of \code{<id, t, m>} multiple pairs of event series.
 #' @param c Numeric cex value for point size; \code{default == 1}
 #' @param cc Numeric cex value for axis & legend magnification; \code{default == 1}
-#' @param leg Logical indicating whether or not to include legend; \code{default == TRUE}
+#' @param leg Logical indicating whether or not to include legend;
+#'   \code{default == TRUE}
 #' @param leg.loc Where to locate legend.
-plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"), leg.loc, cc=1){
+plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
+                              leg.loc, cc=1){
   ids <- unique(x$id)
   plot(1,
        ylim = c(0.5, length(ids) + 0.5),
