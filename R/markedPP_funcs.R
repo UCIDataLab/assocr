@@ -85,6 +85,8 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
   row.names(dat) <- 1:nrow(dat)
   ses <- ses[order(ses$t), ]
   row.names(ses) <- 1:nrow(ses)
+  dat$id <- factor(data$id)
+  ses$id <- factor(ses$id)
   return ( list(data = dat[, c("id", "m", "sid", "t")],
                 sessions = ses[, c("id", "m", "sid", "n", "t")]) )
 }
@@ -214,16 +216,17 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="",
 #' @param cc Numeric cex value for axis & legend magnification; \code{default == 1}
 #' @param leg Logical indicating whether or not to include legend;
 #'   \code{default == TRUE}
-#' @param leg.loc Where to locate legend.
+#' @param leg.loc Where to locate legend in \code{c(x,y)} coordinates.
+#' @param xlab Character x-axis label.
 plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
-                              leg.loc, cc=1){
+                              leg.loc=c(2.25, 11.75), cc=1, xlab="t"){
   ids <- unique(x$id)
   plot(1,
        ylim = c(0.5, length(ids) + 0.5),
        xlim = W,
        type = "n",
        ylab = "User ID",
-       xlab = "t",
+       xlab = xlab,
        yaxt = "n",
        cex.lab = cc,
        cex.axis = cc )
@@ -253,8 +256,8 @@ plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
        las = 1,
        cex.axis=cc*0.75)
   if(leg == TRUE){
-    legend(2.25, 11.75,
-           legend = c("Mark 1", "Mark 2"),
+    legend(leg.loc[1], leg.loc[2],
+           legend = lbl,
            pch = "|",
            col = c(gray(0.6), gray(0)),
            horiz = TRUE,
