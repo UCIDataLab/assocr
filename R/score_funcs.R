@@ -252,10 +252,9 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
                          samp = "empirical", rng = NULL){
   ids <- levels(data$data$id)
-
   r1 <- .filter_list(data = data, id = ids[1])
   r2 <- .filter_list(data = data, id = ids[2])
-  r3 <- .filter_list(data = data, id = ids, m = c(1,2))
+  r3 <- .filter_list(data = data, id = ids, m = c(1, 2))
   r4 <- .filter_list(data = data, id = ids, m = c(2, 1))
   out <- rbind(calc_cmp(r1, n, W, bidirectional, samp, rng),
                calc_cmp(r2, n, W, bidirectional, samp, rng),

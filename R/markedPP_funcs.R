@@ -85,7 +85,7 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
   row.names(dat) <- 1:nrow(dat)
   ses <- ses[order(ses$t), ]
   row.names(ses) <- 1:nrow(ses)
-  dat$id <- factor(data$id)
+  dat$id <- factor(dat$id)
   ses$id <- factor(ses$id)
   return ( list(data = dat[, c("id", "m", "sid", "t")],
                 sessions = ses[, c("id", "m", "sid", "n", "t")]) )
