@@ -5,7 +5,7 @@
 \title{Plot multiple pairs of event series.}
 \usage{
 plot_mult_markedpp(x, W, c = 1, leg = TRUE, lbl = c("Mark 1", "Mark 2"),
-  leg.loc, cc = 1)
+  leg.loc = c(2.25, 11.75), cc = 1, xlab = "t")
 }
 \arguments{
 \item{x}{Data.frame of \code{<id, t, m>} multiple pairs of event series.}
@@ -20,9 +20,11 @@ plot_mult_markedpp(x, W, c = 1, leg = TRUE, lbl = c("Mark 1", "Mark 2"),
 \item{lbl}{Vector of labels for the legend corresponding to marks 1/A and 2/B,
 respectively; \code{default == c("Mark 1", "Mark 2")}}
 
-\item{leg.loc}{Where to locate legend.}
+\item{leg.loc}{Where to locate legend in \code{c(x,y)} coordinates.}
 
 \item{cc}{Numeric cex value for axis & legend magnification; \code{default == 1}}
+
+\item{xlab}{Character x-axis label.}
 }
 \description{
 Plot multiple pairs of event series.
