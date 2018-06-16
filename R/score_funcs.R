@@ -247,6 +247,8 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #'     \item \code{sessions}: summary of sessionized data,
 #'           \code{<id, m, sid, n, t>}
 #'   }
+#' @param rng Data.frame of ranges for resampling; column names correspond to
+#'   ids and the 2 rows correspond to (lower, upper) limits
 #' @return Array of CMPs for each pairwise combination of event streams &
 #'   score function
 pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
@@ -256,10 +258,11 @@ pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   r2 <- .filter_list(data = data, id = ids[2])
   r3 <- .filter_list(data = data, id = ids, m = c(1, 2))
   r4 <- .filter_list(data = data, id = ids, m = c(2, 1))
-  out <- rbind(calc_cmp(r1, n, W, bidirectional, samp, rng),
-               calc_cmp(r2, n, W, bidirectional, samp, rng),
-               calc_cmp(r3, n, W, bidirectional, samp, rng),
-               calc_cmp(r4, n, W, bidirectional, samp, rng))
+  # calculate cmp for each using range of event series with m == 2
+  out <- rbind(calc_cmp(r1, n, W, bidirectional, samp, rng[[ids[1]]]),
+               calc_cmp(r2, n, W, bidirectional, samp, rng[[ids[2]]]),
+               calc_cmp(r3, n, W, bidirectional, samp, rng[[ids[2]]]),
+               calc_cmp(r4, n, W, bidirectional, samp, rng[[ids[1]]]))
   rownames(out) <- c(ids[1],
                      ids[2],
                      paste0(ids[1], "m1_", ids[2], "m2"),

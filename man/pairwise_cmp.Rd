@@ -31,8 +31,8 @@ bidirectional (versus only looking at events prior to event of interest)}
     fitted to the data
 }}
 
-\item{rng}{Vector of \code{c(low, high)} limits for sampling session start
-times if \code{samp == "periodic"}}
+\item{rng}{Data.frame of ranges for resampling; column names correspond to
+ids and the 2 rows correspond to (lower, upper) limits}
 }
 \value{
 Array of CMPs for each pairwise combination of event streams &
