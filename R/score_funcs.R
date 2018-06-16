@@ -197,7 +197,7 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   n1 <- sum(data$data$m == 1)  # number of events of mark 1
   for (i in 1:n) {# simulate start times of mark 1 & calc score funcs for sim pair
     t <- .session_resampling(data, samp = samp, rng = rng)
-    tmp <- rbind(dat.m2, cbind(t, m=rep(1, n1)))
+    tmp <- rbind(dat.m2, cbind(t, m = rep(1, n1)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
 
@@ -234,6 +234,64 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
     with(data$sessions[ind, ], rep(t, n)) +  # subtract current session start times
     rep(t.ses, data$sessions$n[ind])  # add new start times in
   return (sim.t)
+}
+
+################################################################################
+#' Wrapper to compute CMP for each combination of a given pair of user data
+#'
+#' @inheritParams calc_cmp
+#' @param data List of data.frames for two pairs of event series (output of
+#'   \code{assocr::sessionize_data()}):
+#'   \itemize{
+#'     \item \code{data}: sessionized data, \code{<id, m, sid, t>}
+#'     \item \code{sessions}: summary of sessionized data,
+#'           \code{<id, m, sid, n, t>}
+#'   }
+#' @return Array of CMPs for each pairwise combination of event streams &
+#'   score function
+pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
+                         samp = "empirical", rng = NULL){
+  ids <- levels(data$data$id)
+
+  r1 <- .filter_list(data = data, id = ids[1])
+  r2 <- .filter_list(data = data, id = ids[2])
+  r3 <- .filter_list(data = data, id = ids, m = c(1,2))
+  r4 <- .filter_list(data = data, id = ids, m = c(2, 1))
+  out <- rbind(calc_cmp(r1, n, W, bidirectional, samp, rng),
+               calc_cmp(r2, n, W, bidirectional, samp, rng),
+               calc_cmp(r3, n, W, bidirectional, samp, rng),
+               calc_cmp(r4, n, W, bidirectional, samp, rng))
+  rownames(out) <- c(ids[1],
+                     ids[2],
+                     paste0(ids[1], "m1_", ids[2], "m2"),
+                     paste0(ids[2], "m1_", ids[1], "m2") )
+  return ( out )
+}
+
+################################################################################
+#' Filter list of data.frames to contain one pair of event series.
+#'
+#' @inheritParams pairwise_cmp
+#' @param id Either of the following
+#'   \itemize{
+#'     \item String containing ID of user for same-source pair of event streams
+#'     \item Vector of strings containing IDs for different-source pair of
+#'       event streams
+#'   }
+#' @param m Array of c(mark of id 1, mark of id 2) used for different-source
+#'   pairs of event streams if \code{id == c(id1, id2)}
+.filter_list <- function(data, id, m = NULL){
+  if (length(id) == 1) {  # streams are from same user
+    data$data <- data$data[data$data$id == id, ]
+    data$sessions <- data$sessions[data$sessions$id == id, ]
+  } else {  # streams are from different users
+    data$data <- data$data[(data$data$id == id[1] & data$data$m == m[1]) |
+                           (data$data$id == id[2] & data$data$m == m[2]),]
+    data$sessions <- data$sessions[
+      (data$sessions$id == id[1] & data$sessions$m == m[1]) |
+        (data$sessions$id == id[2] & data$sessions$m == m[2]), ]
+  }
+  return ( data )
 }
 
 ################################################################################
