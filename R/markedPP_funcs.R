@@ -13,6 +13,7 @@
 #' @param low.bds Numeric array \code{c(n1, n2)} of criteria for minimum number
 #'   events of mark types 1 and 2, resptively.
 #' @return Data.frame of \code{<id, m, t>}
+#' @export
 format_data <- function(data, id.sum, dev=FALSE, low.bds){
   if(dev == FALSE){  # marks corr to FB and non-FB events on computer
     attach(id.sum)
@@ -52,6 +53,7 @@ format_data <- function(data, id.sum, dev=FALSE, low.bds){
 #'     \item \code{sessions}: summary of sessionized data,
 #'            \code{<id, m, sid, n, t>}
 #'   }
+#' @export
 sessionize_data <- function(data, thres = 10, timeScale = "min"){
   # convert event times to minutes
   if (timeScale == "s"){
@@ -140,6 +142,7 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 #' @param sigma Standard deviation of normal if \code{indep == FALSE}
 #' @param lambda2 intensity of second process if  \code{indep == TRUE}
 #' @return Data.frame of \code{<t, m>}
+#' @export
 sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigma,
                          lambda2){
   x <- cumsum( rexp(n = nSamp, rate = lambda) )  # homogeneous poisson process
@@ -190,6 +193,7 @@ sim_markedpp <- function(lambda, W, nSamp, indep = FALSE, p, normal = TRUE, sigm
 #'   respectively; \code{default == c("Mark 1", "Mark 2")}
 #' @param title Main title of plot; \code{default == ""}
 #' @param xlab X-axis label; \code{default == "Time"}
+#' @export
 plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="",
                           xlab="Time"){
   ind <- which(x$m == 1)  # get index for type 1 points
@@ -218,18 +222,34 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="",
 #'   \code{default == TRUE}
 #' @param leg.loc Where to locate legend in \code{c(x,y)} coordinates.
 #' @param xlab Character x-axis label.
+#' @param ylab Character y-axis label.
+#' @param xticks boolean whether or not to plot x tick latels
+#' @export
 plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
-                              leg.loc=c(2.25, 11.75), cc=1, xlab="t"){
+                              leg.loc=c(2.25, 11.75), cc=1, xlab="t", ylab="User", xticks=TRUE){
   ids <- unique(x$id)
-  plot(1,
+  if(xticks){ # use the default x tick marks & labels
+    plot(1,
        ylim = c(0.5, length(ids) + 0.5),
        xlim = W,
        type = "n",
-       ylab = "User ID",
+       ylab = ylab,
        xlab = xlab,
        yaxt = "n",
        cex.lab = cc,
        cex.axis = cc )
+  } else{ # do it yourself outside
+    plot(1,
+         ylim = c(0.5, length(ids) + 0.5),
+         xlim = W,
+         type = "n",
+         ylab = ylab,
+         xlab = xlab,
+         yaxt = "n",
+         cex.lab = cc,
+         cex.axis = cc,
+         xaxt = "n")
+  }
   abline(h = 0.5,
          col = gray(0.8, alpha=0.9),
          lwd = 0.5)
@@ -248,7 +268,8 @@ plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
            y = rep(i - 0.15, sum(ind)),
            pch = "|",
            cex = c,
-           col = gray(0.6, alpha=0.4))
+           # col = gray(0.6, alpha=0.4)
+           col = "red")
   }
   axis(2,
        at = 1:length(ids),
@@ -259,7 +280,8 @@ plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
     legend(leg.loc[1], leg.loc[2],
            legend = lbl,
            pch = "|",
-           col = c(gray(0), gray(0.6)),
+           # col = c(gray(0), gray(0.6)),
+           col = c(gray(0), "red"),
            horiz = TRUE,
            bty = "n",
            cex = cc,

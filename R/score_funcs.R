@@ -9,7 +9,7 @@
 #' @return Minimum value of \code{x} such that \code{min(x) > 0}
 #' @examples
 #' nonzero_min(c(1,3,5,2,0))
-
+#' @export
 nonzero_min <- function(x){
   return( min(x[x > 0]) )
 }
@@ -21,7 +21,7 @@ nonzero_min <- function(x){
 #' @param x Positive double.
 #' @param level Number of decimal places to return; \code{default == 0}
 #' @return Decimal ceiling of \code{x}.
-
+#' @export
 ceiling_dec <- function(x, level = 0){
   # return(trunc(x*10^level + 0.5) / 10^level)
   return( round(x + 5*10^(-level-1), level) )
@@ -32,7 +32,7 @@ ceiling_dec <- function(x, level = 0){
 #'
 #' @inheritParams ceiling_dec
 #' @return Number of leading zeros.
-
+#' @export
 count_zeros <- function(x){
   return( attr(regexpr("(?<=\\.)0+", format(x, scientific = FALSE), perl = TRUE),
                "match.length") )
@@ -55,7 +55,7 @@ count_zeros <- function(x){
 #'     \item \code{nA}: number of events of type 1/A
 #'     \item \code{nB}: number of events of type 2/B
 #'   }
-
+#' @export
 calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
   ### calculate iets
   x <- x[order(x$t), ]
@@ -118,7 +118,7 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 #'   \code{indep == 1} if the pair was independent; i.e.,
 #'   \code{<iet.mn, iet.md, s, m, indep, slr.iet.mn, slr.iet.md, slr.s, slr.m,
 #'          cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
-
+#' @export
 calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
                          bds.m = c(0,0.6), bw.type = "nrd"){
   rslt <- data.frame(matrix(NA,
@@ -166,7 +166,7 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 }
 
 ################################################################################
-#' Calculate the coincidental match probability for a single pairs of event
+#' Calculate the coincidental match probability for a single pair of event
 #' series.
 #'
 #' @inheritParams calc_score_funcs
@@ -189,6 +189,7 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 #'   times if \code{samp == "periodic"}
 #' @return Data.frame of CMPs for each score function;
 #'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
+#' @export
 calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
                      samp = "empirical", rng = NULL){
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
@@ -207,8 +208,8 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   return( list(iet.mn = sum(sim$iet.mn < obs$iet.mn) / n,
                iet.md = sum(sim$iet.md < obs$iet.md) / n,
                s = sum(sim$s < obs$s) / n,
-               m = sum(sim$m > obs$m) / n
-               )
+               m = sum(sim$m > obs$m) / n,
+               sim = sim)
           )
 }
 
@@ -251,6 +252,7 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #'   ids and the 2 rows correspond to (lower, upper) limits
 #' @return Array of CMPs for each pairwise combination of event streams &
 #'   score function
+#' @export
 pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
                          samp = "empirical", rng = NULL){
   ids <- levels(data$data$id)
@@ -259,15 +261,25 @@ pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   r3 <- .filter_list(data = data, id = ids, m = c(1, 2))
   r4 <- .filter_list(data = data, id = ids, m = c(2, 1))
   # calculate cmp for each using range of event series with m == 2
-  out <- rbind(calc_cmp(r1, n, W, bidirectional, samp, rng[[ids[1]]]),
-               calc_cmp(r2, n, W, bidirectional, samp, rng[[ids[2]]]),
-               calc_cmp(r3, n, W, bidirectional, samp, rng[[ids[2]]]),
-               calc_cmp(r4, n, W, bidirectional, samp, rng[[ids[1]]]))
-  rownames(out) <- c(ids[1],
+  o1 <- calc_cmp(r1, n, W, bidirectional, samp, rng[[ids[1]]])
+  o2 <- calc_cmp(r2, n, W, bidirectional, samp, rng[[ids[2]]])
+  o3 <- calc_cmp(r3, n, W, bidirectional, samp, rng[[ids[2]]])
+  o4 <- calc_cmp(r4, n, W, bidirectional, samp, rng[[ids[1]]])
+  cmp <- rbind(o1[1:4],
+               o2[1:4],
+               o3[1:4],
+               o4[1:4])
+  rownames(cmp) <- c(ids[1],
                      ids[2],
                      paste0(ids[1], "m1_", ids[2], "m2"),
                      paste0(ids[2], "m1_", ids[1], "m2") )
-  return ( out )
+  out <- list(cmp = cmp,
+              o1 = o1$sim,
+              o2 = o2$sim,
+              o3 = o3$sim,
+              o4 = o4$sim)
+  names(out)[2:5] <- rownames(cmp)
+  return (out)
 }
 
 ################################################################################

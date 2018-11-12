@@ -5,7 +5,8 @@
 \title{Plot multiple pairs of event series.}
 \usage{
 plot_mult_markedpp(x, W, c = 1, leg = TRUE, lbl = c("Mark 1", "Mark 2"),
-  leg.loc = c(2.25, 11.75), cc = 1, xlab = "t")
+  leg.loc = c(2.25, 11.75), cc = 1, xlab = "t", ylab = "User",
+  xticks = TRUE)
 }
 \arguments{
 \item{x}{Data.frame of \code{<id, t, m>} multiple pairs of event series.}
@@ -25,6 +26,10 @@ respectively; \code{default == c("Mark 1", "Mark 2")}}
 \item{cc}{Numeric cex value for axis & legend magnification; \code{default == 1}}
 
 \item{xlab}{Character x-axis label.}
+
+\item{ylab}{Character y-axis label.}
+
+\item{xticks}{boolean whether or not to plot x tick latels}
 }
 \description{
 Plot multiple pairs of event series.

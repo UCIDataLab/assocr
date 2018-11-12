@@ -2,7 +2,7 @@
 % Please edit documentation in R/score_funcs.R
 \name{calc_cmp}
 \alias{calc_cmp}
-\title{Calculate the coincidental match probability for a single pairs of event
+\title{Calculate the coincidental match probability for a single pair of event
 series.}
 \usage{
 calc_cmp(data, n, W = c(0, 7), bidirectional = TRUE, samp = "empirical",
@@ -40,6 +40,6 @@ Data.frame of CMPs for each score function;
   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 }
 \description{
-Calculate the coincidental match probability for a single pairs of event
+Calculate the coincidental match probability for a single pair of event
 series.
 }
