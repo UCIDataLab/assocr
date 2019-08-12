@@ -69,18 +69,16 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
          \"day\")")
   }
 
-  ids <- unique(data$id)  # get unique ids from the data
-  for (i in ids) {  # sessionize data for all users one at a time
-    tmp.1 <- find_sessions(data[data$id == i & data$m == 1, ], timeScale=timeScale)  # user i mark 1
-    tmp.1$sessions$m <- rep(1, nrow(tmp.1$sessions))
-    tmp.2 <- find_sessions(data[data$id == i & data$m == 2, ], timeScale=timeScale)  # user i mark 2
-    tmp.2$sessions$m <- rep(2, nrow(tmp.2$sessions))
-    if (i == ids[1]) {  # if its the first user, make data.frames to export
-      dat <- rbind(tmp.1$data, tmp.2$data)
-      ses <- rbind(tmp.1$sessions, tmp.2$sessions)
+  vals <- unique(data[,c("id", "m")])  # get unique (id, mark) tuples from the data
+  for (i in 1:nrow(vals)) {  # sessionize data for all users one at a time
+    tmp <- find_sessions(data[data$id == vals$id[i] & data$m == vals$m[i], ], timeScale=timeScale)
+    tmp$sessions$m <- rep(vals$m[i], nrow(tmp$sessions))
+    if (i == 1) {  # if its the first combination, make data.frames to export
+      dat <- tmp$data
+      ses <- tmp$sessions
     } else {  # data.frames already made, concatenate current user's data
-      dat <- rbind(dat, rbind(tmp.1$data, tmp.2$data))
-      ses <- rbind(ses, rbind(tmp.1$sessions, tmp.2$sessions))
+      dat <- rbind(dat, tmp$data)
+      ses <- rbind(ses, tmp$sessions)
     }
   }
   dat <- dat[order(dat$t), ]
@@ -92,6 +90,44 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
   return ( list(data = dat[, c("id", "m", "sid", "t")],
                 sessions = ses[, c("id", "m", "sid", "n", "t")]) )
 }
+# sessionize_data <- function(data, thres = 10, timeScale = "min"){
+#   # convert event times to minutes
+#   if (timeScale == "s"){
+#     data$t.min <- data$t / 60
+#   } else if (timeScale == "min") {
+#     data$t.min <- data$t
+#   } else if (timeScale == "hr"){
+#     data$t.min <- data$t * 60
+#   } else if (timeScale == "day"){
+#     data$t.min <- data$t * 24 * 60
+#   } else {
+#     stop("Invalid value for timeScale; enter one of (\"s\", \"min\", \"hr\",
+#          \"day\")")
+#   }
+#
+#   ids <- unique(data$id)  # get unique ids from the data
+#   for (i in ids) {  # sessionize data for all users one at a time
+#     tmp.1 <- find_sessions(data[data$id == i & data$m == 1, ], timeScale=timeScale)  # user i mark 1
+#     tmp.1$sessions$m <- rep(1, nrow(tmp.1$sessions))
+#     tmp.2 <- find_sessions(data[data$id == i & data$m == 2, ], timeScale=timeScale)  # user i mark 2
+#     tmp.2$sessions$m <- rep(2, nrow(tmp.2$sessions))
+#     if (i == ids[1]) {  # if its the first user, make data.frames to export
+#       dat <- rbind(tmp.1$data, tmp.2$data)
+#       ses <- rbind(tmp.1$sessions, tmp.2$sessions)
+#     } else {  # data.frames already made, concatenate current user's data
+#       dat <- rbind(dat, rbind(tmp.1$data, tmp.2$data))
+#       ses <- rbind(ses, rbind(tmp.1$sessions, tmp.2$sessions))
+#     }
+#   }
+#   dat <- dat[order(dat$t), ]
+#   row.names(dat) <- 1:nrow(dat)
+#   ses <- ses[order(ses$t), ]
+#   row.names(ses) <- 1:nrow(ses)
+#   dat$id <- factor(dat$id)
+#   ses$id <- factor(ses$id)
+#   return ( list(data = dat[, c("id", "m", "sid", "t")],
+#                 sessions = ses[, c("id", "m", "sid", "n", "t")]) )
+# }
 
 ###################################################################################
 #' Group single event series (i.e., one user & one type of event) into sessions.
