@@ -182,8 +182,10 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 #'   \itemize{
 #'     \item \code{empirical}: sessionized resampling from empirical distn of
 #'       start times
-#'     \item \code{periodic}: sessionized resampling from sinusoidal curve
-#'       fitted to the data
+#'     \item \code{gaussian}: sessionized resampling from Gaussian distn such
+#'       that 99% of start times fall in \code{rng}
+#'     \item \code{uniform}: sessionized resampling from Uniform distn over
+#'       \code{rng}
 #'   }
 #' @param rng Vector of \code{c(low, high)} limits for sampling session start
 #'   times if \code{samp == "periodic"}
@@ -224,12 +226,15 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   nSamp <- sum(ind)
   if (samp == "empirical") {
     stop("Haven't set this up yet!")
-  } else if (samp == "periodic") {
+  } else if (samp == "gaussian") {
     mu <- mean(rng)
     sigma <- (rng[2] - mu) / 3  # 99% of start times fall in rng
     t.ses <- rnorm(nSamp, mean = mu, sd = sigma)
+  }
+  else if (samp == "uniform") {
+    t.ses <- runif(nSamp, min = rng[1], max = rng[2])
   } else {
-    stop("Invalid value for samp; enter one of (\"empirical\", \"periodic\")")
+    stop("Invalid value for samp; enter one of (\"empirical\", \"gaussian\", \"uniform\")")
   }
   sim.t <- data$data$t[data$data$m == 1] -  # current times of mark 1 events
     with(data$sessions[ind, ], rep(t, n)) +  # subtract current session start times

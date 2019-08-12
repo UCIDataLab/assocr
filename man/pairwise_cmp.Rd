@@ -27,8 +27,10 @@ bidirectional (versus only looking at events prior to event of interest)}
 \itemize{
   \item \code{empirical}: sessionized resampling from empirical distn of
     start times
-  \item \code{periodic}: sessionized resampling from sinusoidal curve
-    fitted to the data
+  \item \code{gaussian}: sessionized resampling from Gaussian distn such
+    that 99% of start times fall in \code{rng}
+  \item \code{uniform}: sessionized resampling from Uniform distn over
+    \code{rng}
 }}
 
 \item{rng}{Data.frame of ranges for resampling; column names correspond to

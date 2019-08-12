@@ -71,9 +71,9 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 
   ids <- unique(data$id)  # get unique ids from the data
   for (i in ids) {  # sessionize data for all users one at a time
-    tmp.1 <- .find_sessions(data[data$id == i & data$m == 1, ])  # user i mark 1
+    tmp.1 <- find_sessions(data[data$id == i & data$m == 1, ], timeScale=timeScale)  # user i mark 1
     tmp.1$sessions$m <- rep(1, nrow(tmp.1$sessions))
-    tmp.2 <- .find_sessions(data[data$id == i & data$m == 2, ])  # user i mark 2
+    tmp.2 <- find_sessions(data[data$id == i & data$m == 2, ], timeScale=timeScale)  # user i mark 2
     tmp.2$sessions$m <- rep(2, nrow(tmp.2$sessions))
     if (i == ids[1]) {  # if its the first user, make data.frames to export
       dat <- rbind(tmp.1$data, tmp.2$data)
@@ -97,7 +97,7 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 #' Group single event series (i.e., one user & one type of event) into sessions.
 #'
 #' @param data Data.frame of event data of same mark for one user,
-#'   \code{<id, t, t.min>}
+#'   \code{<id, t>}
 #' @param thres Number of inactive minutes to consider a new session start
 #' @param timeScale Scale of time measurements of data; one of
 #'   \code{c("s", "min", "hr", "day")}
@@ -106,7 +106,21 @@ sessionize_data <- function(data, thres = 10, timeScale = "min"){
 #'     \item \code{data}: sessionized data, \code{<t, id, t.min, diff, sid>}
 #'     \item \code{sessions}: summary of sessions, \code{<id, t, t.min, sid, n>}
 #'   }
-.find_sessions <- function(data, thres = 10, timeScale = "min"){
+#' @export
+find_sessions <- function(data, thres = 10, timeScale = "min"){
+  # convert event times to minutes
+  if (timeScale == "s"){
+    data$t.min <- data$t / 60
+  } else if (timeScale == "min") {
+    data$t.min <- data$t
+  } else if (timeScale == "hr"){
+    data$t.min <- data$t * 60
+  } else if (timeScale == "day"){
+    data$t.min <- data$t * 24 * 60
+  } else {
+    stop("Invalid value for timeScale; enter one of (\"s\", \"min\", \"hr\",
+         \"day\")")
+  }
   data$diff <- c(0, diff(data$t.min))  # get times between events
   row.names(data) <- 1:nrow(data)
   data.sessions <- data[data$diff == 0 | data$diff >= thres,
