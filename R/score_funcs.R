@@ -221,6 +221,7 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #'
 #' @inheritParams calc_cmp
 #' @return Vector of resampled times for event series of mark 1.
+#' @export
 session_resampling <- function(data, samp = "empirical", rng = NULL){
   # sample new session start times for events of mark 1
   ind <- data$sessions$m == 1
