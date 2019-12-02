@@ -131,6 +131,7 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 
   for(i in 1:nrow(rslt)){
     tmp <-rslt[-i, ]  # remove current obs for calculation of density funcs
+
     ### same source densities
     same <- tmp[tmp$indep == 0, ]
     p.mn.win <- approxfun(density(same$iet.mn, from=bds.iet[1], to=bds.iet[2],
@@ -199,7 +200,7 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   dat.m2 <- data$data[data$data$m == 2, c("m", "t")]  # event series of mark 2
   n1 <- sum(data$data$m == 1)  # number of events of mark 1
   for (i in 1:n) {# simulate start times of mark 1 & calc score funcs for sim pair
-    t <- .session_resampling(data, samp = samp, rng = rng)
+    t <- session_resampling(data, samp = samp, rng = rng)
     tmp <- rbind(dat.m2, cbind(t, m = rep(1, n1)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
@@ -220,7 +221,7 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #'
 #' @inheritParams calc_cmp
 #' @return Vector of resampled times for event series of mark 1.
-.session_resampling <- function(data, samp = "empirical", rng = NULL){
+session_resampling <- function(data, samp = "empirical", rng = NULL){
   # sample new session start times for events of mark 1
   ind <- data$sessions$m == 1
   nSamp <- sum(ind)
