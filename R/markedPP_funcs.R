@@ -312,13 +312,13 @@ plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
            y = rep(i + 0.15, sum(ind)),
            pch = "|",
            cex = c,
-           col = gray(0, alpha=0.4))
+           col = gray(0.6, alpha=0.4))
     ind <- x$id == ids[i] & x$m == 2
     points(x = x$t[ind],
            y = rep(i - 0.15, sum(ind)),
            pch = "|",
            cex = c,
-           col = gray(0.6, alpha=0.4))
+           col = gray(0, alpha=0.4))
            # col = "red")
   }
   axis(2,
@@ -330,7 +330,7 @@ plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
     legend(leg.loc[1], leg.loc[2],
            legend = lbl,
            pch = "|",
-           col = c(gray(0), gray(0.6)),
+           col = c(gray(0.6), gray(0)),
            # col = c(gray(0), "red"),
            horiz = TRUE,
            bty = "n",
