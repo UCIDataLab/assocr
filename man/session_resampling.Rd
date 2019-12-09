@@ -4,7 +4,7 @@
 \alias{session_resampling}
 \title{Resample session start times.}
 \usage{
-session_resampling(data, samp = "empirical", rng = NULL)
+session_resampling(data, samp = "gaussian", rng = NULL, sampSpace = NULL)
 }
 \arguments{
 \item{data}{List of data.frames for one pair of event series (output of

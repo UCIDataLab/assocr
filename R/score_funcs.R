@@ -222,12 +222,15 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #' @inheritParams calc_cmp
 #' @return Vector of resampled times for event series of mark 1.
 #' @export
-session_resampling <- function(data, samp = "empirical", rng = NULL){
+session_resampling <- function(data, samp = "gaussian", rng = NULL, sampSpace = NULL){
   # sample new session start times for events of mark 1
   ind <- data$sessions$m == 1
   nSamp <- sum(ind)
   if (samp == "empirical") {
-    stop("Haven't set this up yet!")
+    if (is.null(sampSpace)) {
+      stop("Must specify sample space for empirical sampling!")
+    }
+    t.ses <- sample(sampSpace, nSamp)
   } else if (samp == "gaussian") {
     mu <- mean(rng)
     sigma <- (rng[2] - mu) / 3  # 99% of start times fall in rng
@@ -263,10 +266,10 @@ session_resampling <- function(data, samp = "empirical", rng = NULL){
 pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
                          samp = "empirical", rng = NULL){
   ids <- levels(data$data$id)
-  r1 <- .filter_list(data = data, id = ids[1])
-  r2 <- .filter_list(data = data, id = ids[2])
-  r3 <- .filter_list(data = data, id = ids, m = c(1, 2))
-  r4 <- .filter_list(data = data, id = ids, m = c(2, 1))
+  r1 <- filter_list(data = data, id = ids[1])
+  r2 <- filter_list(data = data, id = ids[2])
+  r3 <- filter_list(data = data, id = ids, m = c(1, 2))
+  r4 <- filter_list(data = data, id = ids, m = c(2, 1))
   # calculate cmp for each using range of event series with m == 2
   o1 <- calc_cmp(r1, n, W, bidirectional, samp, rng[[ids[1]]])
   o2 <- calc_cmp(r2, n, W, bidirectional, samp, rng[[ids[2]]])
@@ -301,7 +304,8 @@ pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #'   }
 #' @param m Array of c(mark of id 1, mark of id 2) used for different-source
 #'   pairs of event streams if \code{id == c(id1, id2)}
-.filter_list <- function(data, id, m = NULL){
+#' @export
+filter_list <- function(data, id, m = NULL){
   if (length(id) == 1) {  # streams are from same user
     data$data <- data$data[data$data$id == id, ]
     data$sessions <- data$sessions[data$sessions$id == id, ]
