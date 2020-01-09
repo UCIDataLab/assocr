@@ -2,7 +2,7 @@
 
 export(calc_cmp)
 export(calc_score_funcs)
-export(calc_slr_cmp)
+export(calc_slr)
 export(ceiling_dec)
 export(count_zeros)
 export(filter_list)

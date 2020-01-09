@@ -27,6 +27,9 @@ session_resampling(data, samp = "gaussian", rng = NULL, sampSpace = NULL)
 
 \item{rng}{Vector of \code{c(low, high)} limits for sampling session start
 times if \code{samp == "periodic"}}
+
+\item{sampSpace}{vector representation of empirical sample space for session
+start times if \code{samp == "empirical"}}
 }
 \value{
 Vector of resampled times for event series of mark 1.

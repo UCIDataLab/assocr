@@ -6,7 +6,7 @@
 series.}
 \usage{
 calc_cmp(data, n, W = c(0, 7), bidirectional = TRUE, samp = "empirical",
-  rng = NULL)
+  sampSpace = NULL, rng = NULL)
 }
 \arguments{
 \item{data}{List of data.frames for one pair of event series (output of
@@ -33,6 +33,9 @@ bidirectional (versus only looking at events prior to event of interest)}
   \item \code{uniform}: sessionized resampling from Uniform distn over
     \code{rng}
 }}
+
+\item{sampSpace}{vector representation of empirical sample space for session
+start times if \code{samp == "empirical"}}
 
 \item{rng}{Vector of \code{c(low, high)} limits for sampling session start
 times if \code{samp == "periodic"}}

@@ -103,12 +103,14 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 }
 
 ################################################################################
-#' Calculate score-based likelihood ratios & coincidental match probabilities
-#' for simulated pairs of event series.
+#' Calculate score-based likelihood ratios for pairs of event series.
 #'
 #' @param same_src,diff_src Data.frame of score functions for same- and
 #'   different-source pairs of event series, respectively, computed via
 #'   \code{assocr::calc_score_funcs}; i.e., \code{<iet.mn, iet.md, s, m>}
+#' @param loo_xval Boolean indicating whether or not to use leave-pairs-out
+#'   cross-validation for computing the SLR and CMP (default FALSE). If TRUE,
+#'   must have id.A and id.B columns in both same_src and diff_src dataframes
 #' @param bds.iet,bds.s,bds.m Vector of bounds \code{c(low, high)} for density
 #'   estimation of mean/median inter-event times, segregation and mingling,
 #'   respectively.
@@ -119,33 +121,41 @@ calc_score_funcs <- function(x, W = c(0, 7), bidirectional = TRUE){
 #'   \code{<iet.mn, iet.md, s, m, indep, slr.iet.mn, slr.iet.md, slr.s, slr.m,
 #'          cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 #' @export
-calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
-                         bds.m = c(0,0.6), bw.type = "nrd"){
+calc_slr <- function(same_src, diff_src,
+                         bds.iet.mn = c(0,1), bds.iet.md = c(0,1),
+                         bds.s = c(-1,1), bds.m = c(0,0.6),
+                         bw.type = "nrd",
+                         loo_xval=FALSE){
   rslt <- data.frame(matrix(NA,
                             nrow = nrow(same_src) + nrow(diff_src),
                             ncol = 9))
-  names(rslt) <- c("indep", "slr.iet.mn", "slr.iet.md", "slr.s", "slr.m",
-                   "cmp.iet.mn", "cmp.iet.md", "cmp.s", "cmp.m")
+  names(rslt) <- c("indep", "slr.iet.mn", "slr.iet.md", "slr.s", "slr.m")
   rslt$indep <- c( rep(0, nrow(same_src)), rep(1, nrow(diff_src)) )
   rslt <- cbind(rbind(same_src, diff_src), rslt)
 
   for(i in 1:nrow(rslt)){
-    tmp <-rslt[-i, ]  # remove current obs for calculation of density funcs
+    if(loo_xval){ # remove all rows with one of A or B's series
+      current_users <- c(rslt$id.A[i], rslt$id.B[i])
+      remove_ind <- which(rslt$id.A %in% current_users | rslt$id.B %in% current_users)
+      tmp <- rslt[-remove_ind,]
+    } else{ # remove current obs for calculation of density funcs
+      tmp <- rslt[-i, ]
+    }
 
     ### same source densities
     same <- tmp[tmp$indep == 0, ]
-    p.mn.win <- approxfun(density(same$iet.mn, from=bds.iet[1], to=bds.iet[2],
+    p.mn.win <- approxfun(density(same$iet.mn, from=bds.iet.mn[1], to=bds.iet.mn[2],
                                   bw=bw.type))
-    p.md.win <- approxfun(density(same$iet.md, from=bds.iet[1], to=bds.iet[2],
+    p.md.win <- approxfun(density(same$iet.md, from=bds.iet.md[1], to=bds.iet.md[2],
                                   bw=bw.type))
     p.s.win <- approxfun(density(same$s, from=bds.s[1], to=bds.s[2], bw=bw.type))
     p.m.win <- approxfun(density(same$m, from=bds.m[1], to=bds.m[2], bw=bw.type))
 
     ### different source densities
     diff <- tmp[tmp$indep == 1, ]
-    p.mn.bt <- approxfun(density(diff$iet.mn, from=bds.iet[1], to=bds.iet[2],
+    p.mn.bt <- approxfun(density(diff$iet.mn, from=bds.iet.mn[1], to=bds.iet.mn[2],
                                  bw=bw.type))
-    p.md.bt <- approxfun(density(diff$iet.md, from=bds.iet[1], to=bds.iet[2],
+    p.md.bt <- approxfun(density(diff$iet.md, from=bds.iet.md[1], to=bds.iet.md[2],
                                  bw=bw.type))
     p.s.bt <- approxfun(density(diff$s, from=bds.s[1], to=bds.s[2], bw=bw.type))
     p.m.bt <- approxfun(density(diff$m, from=bds.m[1], to=bds.m[2], bw=bw.type))
@@ -155,12 +165,6 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
     rslt$slr.iet.md[i] <- p.md.win(rslt$iet.md[i]) / p.md.bt(rslt$iet.md[i])
     rslt$slr.s[i] <- p.s.win(rslt$s[i]) / p.s.bt(rslt$s[i])
     rslt$slr.m[i] <- p.m.win(rslt$m[i]) / p.m.bt(rslt$m[i])
-
-    ### compute coincidental match probability
-    rslt$cmp.iet.mn[i] <- sum(diff$iet.mn < rslt$iet.mn[i]) / nrow(diff)
-    rslt$cmp.iet.md[i] <- sum(diff$iet.md < rslt$iet.md[i]) / nrow(diff)
-    rslt$cmp.s[i] <- sum(diff$s < rslt$s[i]) / nrow(diff)
-    rslt$cmp.m[i] <- sum(diff$m > rslt$m[i]) / nrow(diff)
   }
 
   return( rslt )
@@ -188,19 +192,21 @@ calc_slr_cmp <- function(same_src, diff_src, bds.iet, bds.s = c(-1,1),
 #'     \item \code{uniform}: sessionized resampling from Uniform distn over
 #'       \code{rng}
 #'   }
+#' @param sampSpace vector representation of empirical sample space for session
+#'   start times if \code{samp == "empirical"}
 #' @param rng Vector of \code{c(low, high)} limits for sampling session start
 #'   times if \code{samp == "periodic"}
 #' @return Data.frame of CMPs for each score function;
 #'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 #' @export
 calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
-                     samp = "empirical", rng = NULL){
+                     samp = "empirical", sampSpace = NULL, rng = NULL){
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
   names(sim) <- c("iet.mn", "iet.md", "s", "m")
   dat.m2 <- data$data[data$data$m == 2, c("m", "t")]  # event series of mark 2
   n1 <- sum(data$data$m == 1)  # number of events of mark 1
-  for (i in 1:n) {# simulate start times of mark 1 & calc score funcs for sim pair
-    t <- session_resampling(data, samp = samp, rng = rng)
+  for (i in 1:n) { # simulate start times of mark 1 & calc score funcs for sim pair
+    t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace)
     tmp <- rbind(dat.m2, cbind(t, m = rep(1, n1)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
