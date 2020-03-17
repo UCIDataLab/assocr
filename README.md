@@ -4,6 +4,8 @@ This R package contains code for assessing the likelihood two temporal event ser
 
 Both methods rely on score functions for quantifying the similarity between two temparal event series Currently this package supports the coefficient of segregation, mingling index, and mean and median inter-event time as defined as the time to the nearest neighbor from one series to another.
 
-More details can be found in our paper that is currently under review. This page will be updated pending upon acceptance with links to the publication.
+More details can be found in the following paper:
+
+[Galbraith, C., Smyth, P. and Stern, H.S., 2020. Quantifying the association between discrete event time series with applications to digital forensics. *Journal of the Royal Statistical Society: Series A (Statistics in Society).*](https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12549)
 
 This work was supported by the [Center for Statistics and Applications in Forensic Evidence (CSAFE)](https://forensicstats.org/).
