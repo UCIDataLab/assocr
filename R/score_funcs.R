@@ -196,18 +196,19 @@ calc_slr <- function(same_src, diff_src,
 #'   start times if \code{samp == "empirical"}
 #' @param rng Vector of \code{c(low, high)} limits for sampling session start
 #'   times if \code{samp == "periodic"}
+#' @param m which mark to perform the seampling for;  \code{default == 1}
 #' @return Data.frame of CMPs for each score function;
 #'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 #' @export
 calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
-                     samp = "empirical", sampSpace = NULL, rng = NULL){
+                     samp = "empirical", sampSpace = NULL, rng = NULL, m = 1){
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
   names(sim) <- c("iet.mn", "iet.md", "s", "m")
-  dat.m2 <- data$data[data$data$m == 2, c("m", "t")]  # event series of mark 2
-  n1 <- sum(data$data$m == 1)  # number of events of mark 1
-  for (i in 1:n) { # simulate start times of mark 1 & calc score funcs for sim pair
-    t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace)
-    tmp <- rbind(dat.m2, cbind(t, m = rep(1, n1)))
+  dat <- data$data[data$data$m != m, c("m", "t")]  # event series opposite resampling mark
+  n <- sum(data$data$m == m)  # number of events of mark m
+  for (i in 1:n) { # simulate start times of mark m & calc score funcs for sim pair
+    t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace, mark = m)
+    tmp <- rbind(dat, cbind(t, m = rep(m, n)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
 
@@ -226,11 +227,11 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
 #' Resample session start times.
 #'
 #' @inheritParams calc_cmp
-#' @return Vector of resampled times for event series of mark 1.
+#' @return Vector of resampled times for event series of mark \code{mark}.
 #' @export
-session_resampling <- function(data, samp = "gaussian", rng = NULL, sampSpace = NULL){
+session_resampling <- function(data, samp = "gaussian", rng = NULL, sampSpace = NULL, mark = 1){
   # sample new session start times for events of mark 1
-  ind <- data$sessions$m == 1
+  ind <- data$sessions$m == mark
   nSamp <- sum(ind)
   if (samp == "empirical") {
     if (is.null(sampSpace)) {
@@ -247,7 +248,7 @@ session_resampling <- function(data, samp = "gaussian", rng = NULL, sampSpace = 
   } else {
     stop("Invalid value for samp; enter one of (\"empirical\", \"gaussian\", \"uniform\")")
   }
-  sim.t <- data$data$t[data$data$m == 1] -  # current times of mark 1 events
+  sim.t <- data$data$t[data$data$m == mark] -  # current times of mark 1 events
     with(data$sessions[ind, ], rep(t, n)) +  # subtract current session start times
     rep(t.ses, data$sessions$n[ind])  # add new start times in
   return (sim.t)
