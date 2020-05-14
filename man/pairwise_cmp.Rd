@@ -5,7 +5,7 @@
 \title{Wrapper to compute CMP for each combination of a given pair of user data}
 \usage{
 pairwise_cmp(data, n, W = c(0, 7), bidirectional = TRUE,
-  samp = "empirical", rng = NULL, mark = 1)
+  samp = "empirical", sampSpace = NULL, rng = NULL, mark = 1)
 }
 \arguments{
 \item{data}{List of data.frames for two pairs of event series (output of
@@ -32,6 +32,9 @@ bidirectional (versus only looking at events prior to event of interest)}
   \item \code{uniform}: sessionized resampling from Uniform distn over
     \code{rng}
 }}
+
+\item{sampSpace}{vector representation of empirical sample space for session
+start times if \code{samp == "empirical"}}
 
 \item{rng}{Data.frame of ranges for resampling; column names correspond to
 ids and the 2 rows correspond to (lower, upper) limits}

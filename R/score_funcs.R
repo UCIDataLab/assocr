@@ -271,17 +271,53 @@ session_resampling <- function(data, samp = "gaussian", rng = NULL, sampSpace = 
 #'   score function
 #' @export
 pairwise_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
-                         samp = "empirical", rng = NULL, mark = 1){
+                         samp = "empirical", sampSpace=NULL, rng = NULL, mark = 1){
   ids <- levels(data$data$id)
   r1 <- filter_list(data = data, id = ids[1])
   r2 <- filter_list(data = data, id = ids[2])
   r3 <- filter_list(data = data, id = ids, m = c(1, 2))
   r4 <- filter_list(data = data, id = ids, m = c(2, 1))
-  # calculate cmp for each using range of event series with m == 2
-  o1 <- calc_cmp(r1, n, W, bidirectional, samp, rng[[ids[1]]], mark=mark)
-  o2 <- calc_cmp(r2, n, W, bidirectional, samp, rng[[ids[2]]], mark=mark)
-  o3 <- calc_cmp(r3, n, W, bidirectional, samp, rng[[ids[2]]], mark=mark)
-  o4 <- calc_cmp(r4, n, W, bidirectional, samp, rng[[ids[1]]], mark=mark)
+  # calculate cmp for each using range of event series with m == mark
+  o1 <- calc_cmp(
+    data = r1,
+    n = n,
+    W = W,
+    bidirectional = bidirectional,
+    samp = samp,
+    sampSpace = sampSpace,
+    rng = rng[[ids[1]]],
+    mark = mark
+  )
+  o2 <- calc_cmp(
+    data = r2,
+    n = n,
+    W = W,
+    bidirectional = bidirectional,
+    samp = samp,
+    sampSpace = sampSpace,
+    rng = rng[[ids[2]]],
+    mark = mark
+  )
+  o3 <- calc_cmp(
+    data = r3,
+    n = n,
+    W = W,
+    bidirectional = bidirectional,
+    samp = samp,
+    sampSpace = sampSpace,
+    rng = rng[[ids[2]]],
+    mark = mark
+  )
+  o4 <- calc_cmp(
+    data = r4,
+    n = n,
+    W = W,
+    bidirectional = bidirectional,
+    samp = samp,
+    sampSpace = sampSpace,
+    rng = rng[[ids[1]]],
+    mark = mark
+  )
   cmp <- rbind(o1[1:4],
                o2[1:4],
                o3[1:4],
