@@ -4,7 +4,8 @@
 \alias{session_resampling}
 \title{Resample session start times.}
 \usage{
-session_resampling(data, samp = "gaussian", rng = NULL, sampSpace = NULL)
+session_resampling(data, samp = "gaussian", rng = NULL, sampSpace = NULL,
+  mark = 1)
 }
 \arguments{
 \item{data}{List of data.frames for one pair of event series (output of
@@ -32,7 +33,7 @@ times if \code{samp == "periodic"}}
 start times if \code{samp == "empirical"}}
 }
 \value{
-Vector of resampled times for event series of mark 1.
+Vector of resampled times for event series of mark \code{mark}.
 }
 \description{
 Resample session start times.

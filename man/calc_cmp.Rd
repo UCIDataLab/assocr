@@ -6,7 +6,7 @@
 series.}
 \usage{
 calc_cmp(data, n, W = c(0, 7), bidirectional = TRUE, samp = "empirical",
-  sampSpace = NULL, rng = NULL)
+  sampSpace = NULL, rng = NULL, m = 1)
 }
 \arguments{
 \item{data}{List of data.frames for one pair of event series (output of
@@ -39,6 +39,8 @@ start times if \code{samp == "empirical"}}
 
 \item{rng}{Vector of \code{c(low, high)} limits for sampling session start
 times if \code{samp == "periodic"}}
+
+\item{m}{which mark to perform the seampling for;  \code{default == 1}}
 }
 \value{
 Data.frame of CMPs for each score function;
