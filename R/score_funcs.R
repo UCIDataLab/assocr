@@ -205,10 +205,10 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
   names(sim) <- c("iet.mn", "iet.md", "s", "m")
   dat <- data$data[data$data$m != mark, c("m", "t")]  # event series opposite resampling mark
-  n <- sum(data$data$m == mark)  # number of events of mark m
+  n_mark <- sum(data$data$m == mark)  # number of events of mark m
   for (i in 1:n) { # simulate start times of mark m & calc score funcs for sim pair
     t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace, mark = mark)
-    tmp <- rbind(dat, cbind(t, m = rep(mark, n)))
+    tmp <- rbind(dat, cbind(t, m = rep(mark, n_mark)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
 
