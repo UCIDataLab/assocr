@@ -31,6 +31,8 @@ times if \code{samp == "periodic"}}
 
 \item{sampSpace}{vector representation of empirical sample space for session
 start times if \code{samp == "empirical"}}
+
+\item{mark}{which mark to perform the seampling for;  \code{default == 1}}
 }
 \value{
 Vector of resampled times for event series of mark \code{mark}.

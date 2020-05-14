@@ -40,7 +40,7 @@ start times if \code{samp == "empirical"}}
 \item{rng}{Vector of \code{c(low, high)} limits for sampling session start
 times if \code{samp == "periodic"}}
 
-\item{m}{which mark to perform the seampling for;  \code{default == 1}}
+\item{mark}{which mark to perform the seampling for;  \code{default == 1}}
 }
 \value{
 Data.frame of CMPs for each score function;

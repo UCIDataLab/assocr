@@ -196,7 +196,7 @@ calc_slr <- function(same_src, diff_src,
 #'   start times if \code{samp == "empirical"}
 #' @param rng Vector of \code{c(low, high)} limits for sampling session start
 #'   times if \code{samp == "periodic"}
-#' @param m which mark to perform the seampling for;  \code{default == 1}
+#' @param mark which mark to perform the seampling for;  \code{default == 1}
 #' @return Data.frame of CMPs for each score function;
 #'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 #' @export
@@ -204,11 +204,11 @@ calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
                      samp = "empirical", sampSpace = NULL, rng = NULL, m = 1){
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
   names(sim) <- c("iet.mn", "iet.md", "s", "m")
-  dat <- data$data[data$data$m != m, c("m", "t")]  # event series opposite resampling mark
-  n <- sum(data$data$m == m)  # number of events of mark m
+  dat <- data$data[data$data$m != mark, c("m", "t")]  # event series opposite resampling mark
+  n <- sum(data$data$m == mark)  # number of events of mark m
   for (i in 1:n) { # simulate start times of mark m & calc score funcs for sim pair
-    t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace, mark = m)
-    tmp <- rbind(dat, cbind(t, m = rep(m, n)))
+    t <- session_resampling(data, samp = samp, rng = rng, sampSpace = sampSpace, mark = mark)
+    tmp <- rbind(dat, cbind(t, m = rep(mark, n)))
     sim[i, ] <- as.numeric(calc_score_funcs(tmp, W, bidirectional)[1:4])
   }
 
