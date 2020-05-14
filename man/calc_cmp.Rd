@@ -6,7 +6,7 @@
 series.}
 \usage{
 calc_cmp(data, n, W = c(0, 7), bidirectional = TRUE, samp = "empirical",
-  sampSpace = NULL, rng = NULL, m = 1)
+  sampSpace = NULL, rng = NULL, mark = 1)
 }
 \arguments{
 \item{data}{List of data.frames for one pair of event series (output of

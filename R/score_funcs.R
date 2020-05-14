@@ -201,7 +201,7 @@ calc_slr <- function(same_src, diff_src,
 #'   \code{<iet.mn, iet.md, s, m, cmp.iet.mn, cmp.iet.md, cmp.s, cmp.m>}
 #' @export
 calc_cmp <- function(data, n, W = c(0,7), bidirectional = TRUE,
-                     samp = "empirical", sampSpace = NULL, rng = NULL, m = 1){
+                     samp = "empirical", sampSpace = NULL, rng = NULL, mark = 1){
   sim <- data.frame(matrix(NA, nrow = n, ncol = 4))
   names(sim) <- c("iet.mn", "iet.md", "s", "m")
   dat <- data$data[data$data$m != mark, c("m", "t")]  # event series opposite resampling mark
