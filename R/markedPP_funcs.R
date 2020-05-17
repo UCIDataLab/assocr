@@ -277,7 +277,7 @@ plot_markedpp <- function(x, W, c=1, lbl=c("Mark 1", "Mark 2"), title="",
 #' @export
 plot_mult_markedpp <-function(x, W, c=1, leg=TRUE, lbl=c("Mark 1", "Mark 2"),
                               leg.loc=c(2.25, 11.75), cc=1, xlab="t", ylab="User", xticks=TRUE){
-  ids <- unique(x$id)
+  ids <- rev(sort(unique(x$id)))
   if(xticks){ # use the default x tick marks & labels
     plot(1,
        ylim = c(0.5, length(ids) + 0.5),
