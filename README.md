@@ -8,7 +8,7 @@ More details can be found in the following paper:
 
 [Galbraith, C., Smyth, P. and Stern, H.S., 2020. Quantifying the association between discrete event time series with applications to digital forensics. *Journal of the Royal Statistical Society: Series A (Statistics in Society).*](https://rss.onlinelibrary.wiley.com/doi/full/10.1111/rssa.12549)
 
-To re-create the experiments in the paper, download the [zip file from the RSS](https://rss.onlinelibrary.wiley.com/pb-assets/hub-assets/rss/Datasets/RSSA%20183.3/A1549Galbraith-1591284720010.zip). This folder contains the input data and scripts used to generate all results in the paper. The scripts rely on having the `assocr` package installed, which can be accomplished using the [`devtools](https://github.com/r-lib/devtools) package as follows
+To re-create the experiments in the paper, download the [zip file from the RSS](https://rss.onlinelibrary.wiley.com/pb-assets/hub-assets/rss/Datasets/RSSA%20183.3/A1549Galbraith-1591284720010.zip). This folder contains the input data and scripts used to generate all results in the paper. The scripts rely on having the `assocr` package installed, which can be accomplished using the [`devtools`](https://github.com/r-lib/devtools) package as follows
 ```
 library(devtools)
 Sys.unsetenv("GITHUB_PAT")
